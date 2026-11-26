@@ -333,7 +333,7 @@ bool installMouthCadence()
 }
 }
 
-struct ModuleVersion { unsigned char major, minor, patch; };
+struct ModuleVersion { int major, minor, patch; };
 extern "C" __declspec(dllexport) const char* FF10HgetName()
 {
     if (voiceInstalled && VoiceJaw::actorBindingAvailable) return "FFX Voice-Driven Jaw with Script Speaker Cues";

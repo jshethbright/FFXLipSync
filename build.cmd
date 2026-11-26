@@ -15,10 +15,12 @@ if not defined VSROOT (
 call "%VSROOT%\VC\Auxiliary\Build\vcvarsall.bat" x86
 if errorlevel 1 exit /b 1
 if not exist "%OUT%" mkdir "%OUT%"
-cl /nologo /W4 /WX /std:c++17 /O2 /MT /LD /Fo"%OUT%\FFXProceduralMouth.obj" "%ROOT%src\FFXProceduralMouth.cpp" /link /IMPLIB:"%OUT%\FFXProceduralMouth.lib" /OUT:"%OUT%\FFXProceduralMouth.dll"
-if errorlevel 1 exit /b 1
+for %%M in (FFXProceduralMouth FFXVoiceTiming FFXFMODMixer) do (
+    cl /nologo /W4 /WX /std:c++17 /O2 /MT /LD /Fo"%OUT%\%%M.obj" "%ROOT%src\%%M.cpp" /link /IMPLIB:"%OUT%\%%M.lib" /OUT:"%OUT%\%%M.dll"
+    if errorlevel 1 exit /b 1
+)
 cl /nologo /W4 /WX /std:c++17 /O2 /MT /DFFX_MOUTH_TEST /Fo"%OUT%\FFXProceduralMouth-test.obj" /Fe"%OUT%\FFXProceduralMouth-test.exe" "%ROOT%src\FFXProceduralMouth.cpp" /link /IMPLIB:"%OUT%\FFXProceduralMouth-test.lib"
 if errorlevel 1 exit /b 1
 "%OUT%\FFXProceduralMouth-test.exe"
 if errorlevel 1 exit /b 1
-echo Tests passed. Built "%OUT%\FFXProceduralMouth.dll".
+echo Tests passed. Built the three FFXLipSync modules in "%OUT%".

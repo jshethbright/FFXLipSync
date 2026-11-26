@@ -1,23 +1,31 @@
 ﻿# FFXLipSync
 
-Voice-driven mouth movement for the Windows Steam release of **Final Fantasy X HD Remaster**. The mod uses the playing dialogue to drive jaw opening, interpolates it during rendering, and reduces chatter on models that switch between open and closed mouth textures. It applies to procedural dialogue. Hand-animated scenes keep their authored animation.
+Dialogue sync improvements for the Windows Steam release of **Final Fantasy X HD Remaster**. FFXLipSync includes voice-driven procedural mouth movement, a shorter script wait before voice playback, and an optional lower-latency FMOD mixer.
 
 ## Requirements
 
-- The Windows Steam version of **Final Fantasy X HD Remaster**. The module was developed against the executable from Steam BuildID `25501027` and checks its expected instructions at startup.
+- The Windows Steam version of **Final Fantasy X HD Remaster**. The modules were developed against the executable from Steam BuildID `25501027` and check the instructions they patch at startup.
 - **FF10 Module Loader**, bundled with ffgriever's [Final Fantasy X and X-2 HD External File Loader](https://www.nexusmods.com/finalfantasyxx2hdremaster/mods/150). Use an External File Loader release that supports your game build. This is the only required mod.
-- To build the DLL, install Visual Studio 2022 or its Build Tools with the **Desktop development with C++** workload and the Windows SDK.
+- To build the DLLs, install Visual Studio 2022 or its Build Tools with the **Desktop development with C++** workload and the Windows SDK.
 
 The FPS mod, PS2 face restorations, and Japanese audio patches are optional. This was developed with [FFX-60fps 0.13](https://github.com/peternguyenst/FFX-60fps/releases/tag/0.13) and verified against Japanese voice events. Voice support for other languages may vary with their event names.
 
 ## Build and install
 
-1. Run `build.cmd` from the repository. It builds the 32-bit module and runs the built-in tests.
-2. Close FFX. Install the External File Loader in the game folder if it is missing.
-3. Copy `build\FFXProceduralMouth.dll` into the game's `modules` directory beside `ff10-file-loader.dll`. Steam's **Manage → Browse local files** opens the game folder.
-4. Launch **Final Fantasy X**. The module loader records its status in `hook.log`. `ffx-voice-jaw.log` lists speakers as the module first matches their procedural dialogue.
+1. Run `build.cmd` to build the three 32-bit DLLs and run the lip-sync tests.
+2. Close FFX. Install the External File Loader in the game folder if needed.
+3. Copy the DLLs you want from `build` into the game's `modules` directory beside `ff10-file-loader.dll`. In Steam, choose **Browse local files** from the game's **Manage** menu.
+4. Launch **Final Fantasy X**. Check `hook.log` for module status. The mouth module logs matched speakers in `ffx-voice-jaw.log`, and the mixer module records the active buffer in `ffx-fmod-mixer.log`.
 
-To uninstall, close the game and remove `modules\FFXProceduralMouth.dll`.
+| DLL | What it does |
+| --- | --- |
+| `FFXProceduralMouth.dll` | Drives procedural mouth movement from dialogue audio. Hand-animated scenes keep their authored animation. |
+| `FFXVoiceTiming.dll` | Reduces the five-tick voice wait to one tick. The original wait handler still checks the game's pause conditions. |
+| `FFXFMODMixer.dll` | Sets FMOD's software mixer to four 512-sample blocks at initialization. This affects dialogue, music, and effects. |
+
+Each DLL can be installed independently. To uninstall any of them, close FFX and remove its DLL from the `modules` directory. If you hear clicks or dropouts, removing `FFXFMODMixer.dll` restores the game's default mixer setting on the next launch.
+
+The timing and mixer changes were verified together on one Japanese-voiced cutscene with English text and the FPS mod set to 120 FPS. Smaller mixer blocks give the audio engine less time to fill each block. Audio stability under heavier loads can vary by system.
 
 ## Speaker matching
 
