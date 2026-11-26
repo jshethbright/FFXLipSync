@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include "FFXVoiceDiagnostics.h"
 
 namespace {
 using EventInit = int (WINAPI*)(void*, int, unsigned, void*, unsigned);
@@ -54,10 +55,12 @@ int WINAPI initWithSmallerMixer(void* eventSystem, int maxChannels, unsigned fla
     if (getCore && set && get && getCore(eventSystem, &system) == 0 && system)
         setResult = set(system, trialBlock, bufferCount);
     const int result = originalInit(eventSystem, maxChannels, flags, extraData, eventFlags);
-    unsigned block = 0;
-    int blocks = 0;
-    const int query = system && get ? get(system, &block, &blocks) : -1;
-    record(setResult, result, query, block, blocks);
+    if (VoiceDiagnostics::enabled()) {
+        unsigned block = 0;
+        int blocks = 0;
+        const int query = system && get ? get(system, &block, &blocks) : -1;
+        record(setResult, result, query, block, blocks);
+    }
     return result;
 }
 

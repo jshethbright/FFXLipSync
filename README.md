@@ -15,7 +15,7 @@ The FPS mod, PS2 face restorations, and Japanese audio patches are optional. Thi
 1. Run `build.cmd` to build the three 32-bit DLLs and run the lip-sync tests.
 2. Close FFX. Install the External File Loader in the game folder if needed.
 3. Copy the DLLs you want from `build` into the game's `modules` directory beside `ff10-file-loader.dll`. In Steam, choose **Browse local files** from the game's **Manage** menu.
-4. Launch **Final Fantasy X**. Check `hook.log` for module status. The mouth module logs matched speakers in `ffx-voice-jaw.log`, and the mixer module records the active buffer in `ffx-fmod-mixer.log`.
+4. Launch **Final Fantasy X**. Check `hook.log` for module status. The mouth module logs matched speakers in `ffx-voice-jaw.log`, and the mixer module records the active buffer in `ffx-fmod-mixer.log`. Set `Logging=0` under `[Diagnostics]` in `modules\config\FFXLipSync.ini` to turn off these logs on the next launch.
 
 | DLL | What it does |
 | --- | --- |

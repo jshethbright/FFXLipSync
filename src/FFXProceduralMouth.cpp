@@ -4,6 +4,7 @@
 #include <cstring>
 #include <algorithm>
 #include "FFXVoiceJaw.h"
+#include "FFXVoiceDiagnostics.h"
 
 namespace {
 constexpr size_t talkEnabled = 0x4D4;
@@ -20,6 +21,7 @@ bool voiceInstalled = false;
 using UpdateMouth = void (__cdecl*)(BYTE*);
 UpdateMouth originalMouth = nullptr;
 volatile LONG matchedActors = 0;
+bool logMatches = true;
 using SetTalk = BYTE* (__cdecl*)(BYTE*, int);
 SetTalk originalSetTalk = nullptr;
 
@@ -206,7 +208,7 @@ void __cdecl updateMouthFromVoice(BYTE* actor)
         renderingActor = actor;
         renderingOpening = opening;
         renderingTextureOpen = texture;
-        if (target >= 0) logSpeaker(who);
+        if (logMatches && target >= 0) logSpeaker(who);
     }
     originalMouth(actor);
     renderingActor = nullptr;
@@ -328,6 +330,7 @@ bool installMouthCadence()
     DWORD ignored = 0;
     VirtualProtect(code, sizeof replacement, previous, &ignored);
     FlushInstructionCache(GetCurrentProcess(), code, sizeof replacement);
+    logMatches = VoiceDiagnostics::enabled();
     voiceInstalled = installVoiceMouth(base, nt);
     return true;
 }
